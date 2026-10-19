@@ -45,6 +45,7 @@ from . import (
 )
 
 _new_methods = {
+    "CCBendRadPass",
     "BndMPoleSymplectic4RadPass",
     "StrMPoleSymplectic4RadPass",
     "ExactMultipoleRadPass",
