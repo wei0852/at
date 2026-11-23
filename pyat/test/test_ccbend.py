@@ -37,6 +37,40 @@ def test_ccbend_import_export():
     assert reconstructed.BendingAngle == bend.BendingAngle
 
 
+@pytest.mark.parametrize("suffix", (".mat", ".m", ".repr"))
+def test_save_load_preserves_ccbend(tmp_path, suffix):
+    ring = at.Lattice(
+        [at.CCBend("CB", 1.2, .12, -.8, FringeModel=1, CompensateKN=1)],
+        energy=3e9,
+    )
+    filename = tmp_path / f"ccbend{suffix}"
+    ring.save(filename)
+    bend = at.Lattice.load(filename)[0]
+    assert isinstance(bend, at.CCBend)
+    assert bend.PassMethod == "CCBendPass"
+    for attr in ("FringeModel", "EdgeOrder", "CompensateKN", "OptimizeFSE"):
+        assert type(getattr(bend, attr)) is int
+
+
+def test_load_legacy_ccbend_class():
+    from at.load.utils import element_from_dict
+
+    bend = element_from_dict(
+        {
+            "FamName": "CB",
+            "Length": 1.2,
+            "BendingAngle": .12,
+            "PassMethod": "CCBendPass",
+            "Class": "Bend",
+            "FringeModel": 1.0,
+            "CompensateKN": 1.0,
+        }
+    )
+    assert isinstance(bend, at.CCBend)
+    assert type(bend.FringeModel) is int
+    assert type(bend.CompensateKN) is int
+
+
 @pytest.mark.parametrize("fields", ({"NumIntSteps": 0}, {"IntegrationOrder": 5},
                                      {"FringeModel": 2}, {"Length": 0},
                                      {"BendingAngle": 0}, {"PolynomB": np.array([0.])},

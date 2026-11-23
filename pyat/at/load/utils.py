@@ -112,6 +112,9 @@ _PASS_MAP: dict[str, str] = {
     "BendLinearPass": "Dipole",
     "BndMPoleSymplectic4RadPass": "Dipole",
     "BndMPoleSymplectic4Pass": "Dipole",
+    "CCBendPass": "CCBend",
+    "CCBendRadPass": "CCBend",
+    "CCBendQuantPass": "CCBend",
     "QuadLinearPass": "Quadrupole",
     "StrMPoleSymplectic4Pass": "Multipole",
     "StrMPoleSymplectic4RadPass": "Multipole",
@@ -291,6 +294,13 @@ def element_from_dict(
             elem_dict["PassMethod"] = "IdentityPass"
         msg = f"Class '{classname}' does not exist, using `{cls.__name__}` instead."
         _warn(index, msg, elem_dict, stacklevel=3)
+    # A specific PassMethod may identify a subclass of the class given by the
+    # "Class" field (e.g. a CCBend saved with Class="Bend" by older versions).
+    pass_classname = _PASS_MAP.get(dct.get("PassMethod", ""))
+    if pass_classname is not None:
+        pass_cls = _CLASS_MAP.get(pass_classname.lower())
+        if pass_cls is not None and issubclass(pass_cls, cls):
+            cls = pass_cls
     return cls.new_from_dict(**dct)
 
 

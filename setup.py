@@ -195,7 +195,7 @@ gpu_pass_methods = gpu_src.glob("*Pass.cpp")
 def integrator_ext(pass_method, flags):
     if pass_method.stem.startswith("CCBend"):
         dependencies = [
-            join(integrator_src_orig, header)
+            str(integrator_src_orig / header)
             for header in (
                 "ccbend_pass_impl.h",
                 "ccbend_core.h",
@@ -204,6 +204,7 @@ def integrator_ext(pass_method, flags):
         ]
     else:
         dependencies = []
+
     return Extension(
         name=f"at.integrators.{pass_method.stem}",
         sources=[pass_method],

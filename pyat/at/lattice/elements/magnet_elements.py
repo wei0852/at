@@ -664,6 +664,8 @@ class CCBend(Dipole):
     Reference strength and offset optimization default to enabled.
     """
 
+    _file_classname = "CCBend"
+
     _conversions = dict(
         Dipole._conversions,
         fringeInt1=lambda v: _array(v, (8,)),
